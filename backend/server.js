@@ -6,10 +6,16 @@ const fs = require('fs');
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 
+// Sanitize MONGO_URI (remove any accidental quotes from dashboard entry)
+let mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/collegestudysystem';
+if (mongoUri.startsWith('"') && mongoUri.endsWith('"')) {
+  mongoUri = mongoUri.slice(1, -1);
+}
+
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/collegestudysystem', { family: 4 })
-  .then(() => console.log('MongoDB Connected'))
-  .catch(err => console.error('MongoDB connection error:', err));
+mongoose.connect(mongoUri, { family: 4 })
+  .then(() => console.log('✅ MongoDB Connected to:', mongoUri.split('@')[1] || 'localhost'))
+  .catch(err => console.error('❌ MongoDB connection error:', err));
 
 const app = express();
 app.use(cors());
